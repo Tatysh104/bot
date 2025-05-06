@@ -4,44 +4,37 @@ const token = '7721082236:AAGC9XfzQUPGaBNraYh5vzvVKtpTou0cKoQ';
 // Создаем экземпляр бота
 const bot = new TelegramBot(token, { polling: true });
 
-// Определяем команды для меню
-const commands = [
-    { command: '/start', description: 'Запустить бота' },
-    { command: '/help', description: 'Получить помощь' },
-    { command: '/about', description: 'Узнать о боте' }
-];
-
-// Устанавливаем команды для бота
-bot.setMyCommands(commands);
-
-// Обрабатываем команду /start
+// Приветствие при запуске бота
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Добро пожаловать! Я ваш Telegram-бот. Используйте /help для получения списка команд.');
+    bot.sendMessage(chatId, 'Привет, октагон!');
 });
 
-// Обрабатываем команду /help
+// Команда /help
 bot.onText(/\/help/, (msg) => {
     const chatId = msg.chat.id;
     const helpMessage = `
-        Доступные команды:
-        /start - Запустить бота
-        /help - Получить помощь
-        /about - Узнать о боте
-    `;
+Список доступных команд:
+1. /help - возвращает список команд с их описанием.
+2. /site - отправляет ссылку на сайт октагона.
+3. /creator - отправляет ваше ФИО.
+`;
     bot.sendMessage(chatId, helpMessage);
 });
 
-// Обрабатываем команду /about
-bot.onText(/\/about/, (msg) => {
+// Команда /site
+bot.onText(/\/site/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Я простой Telegram-бот, созданный для демонстрации работы с API Telegram.');
+    bot.sendMessage(chatId, 'Сайт октагона: https://octagon-students.ru/');
 });
 
-// Обрабатываем все остальные сообщения
-bot.on('message', (msg) => {
+// Команда /creator
+bot.onText(/\/creator/, (msg) => {
     const chatId = msg.chat.id;
-    if (!msg.text.startsWith('/')) {
-        bot.sendMessage(chatId, 'Я не понимаю эту команду. Используйте /help для получения списка доступных команд.');
-    }
+    bot.sendMessage(chatId, 'Мое ФИО: Чокмоева Таттыгул');
+});
+
+// Обработка ошибок
+bot.on("polling_error", (error) => {
+    console.error("Ошибка при получении обновлений:", error.message);
 });
