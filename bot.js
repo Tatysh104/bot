@@ -79,3 +79,33 @@ bot.onText(/!webscr (.+)/, async (msg, match) => {
 bot.on("polling_error", (error) => {
     console.error("Ошибка при получении обновлений:", error.message);
 });
+
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'ChatBotTests'
+});
+
+connection.connect(err => {
+  if (err) throw err;
+  console.log('Connected to the database!');
+});
+
+function updateUserLastMessage(userId) {
+  const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  const sql = `
+    INSERT INTO users (ID, lastMessage) VALUES (?, ?)
+    ON DUPLICATE KEY UPDATE lastMessage = VALUES(lastMessage)
+  `;
+  connection.query(sql, [userId, today], (err) => {
+    if (err) console.error('Ошибка при записи в БД:', err);
+  });
+}
+bot.on('message', (msg) => {
+  const userId = msg.from.id;
+  updateUserLastMessage(userId);
+});
+
